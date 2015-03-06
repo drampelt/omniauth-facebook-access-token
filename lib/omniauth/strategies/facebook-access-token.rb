@@ -86,10 +86,11 @@ module OmniAuth
         self.access_token = build_access_token
         self.access_token = self.access_token.refresh! if self.access_token.expired?
 
-        # Validate that the token belong to the application
-        app_raw = self.access_token.get('/app').parsed
-        if app_raw["id"] != options.client_id.to_s
-          raise ArgumentError.new("Access token doesn't belong to the client.")
+        if validate_token_belongs_to_application?
+          app_raw = self.access_token.get('/app').parsed
+          if app_raw["id"] != options.client_id.to_s
+            raise ArgumentError.new("Access token doesn't belong to the client.")
+          end
         end
 
         # Instead of calling super, duplicate the functionlity, but change the provider to 'facebook'.
@@ -110,6 +111,10 @@ module OmniAuth
       end
 
       protected
+
+      def validate_token_belongs_to_application?
+        false
+      end
 
       def deep_symbolize(hash)
         hash.inject({}) do |h, (k,v)|
