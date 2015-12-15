@@ -64,7 +64,15 @@ module OmniAuth
       end
 
       def info_options
-        options[:info_fields] ? {:params => {:fields => options[:info_fields]}} : {}
+        if options[:info_fields]
+          {:params => {:fields => options[:info_fields]}}
+        else
+          {:params => {:fields => default_info_fields}}
+        end
+      end
+
+      def default_info_fields
+        'id,name,email'
       end
 
       def client
